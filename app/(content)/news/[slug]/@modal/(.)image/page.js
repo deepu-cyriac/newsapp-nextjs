@@ -6,11 +6,17 @@
 //so different content will be shown either the intercepted one or the current one depending on how you got to the page
 //first time will load intercepted. subsequent reloads will load current one - i think
 
-import { notFound } from "next/navigation";
+"use client";
+//as router only works on client side
+
+import { notFound, useRouter } from "next/navigation";
 
 import { DUMMY_NEWS } from "@/dummy-news";
 
 export default function InterceptedImagePage({ params }) {
+  //a next js router for navigating programmatically around the page
+  const router = useRouter();
+
   const newsItemSlug = params.slug;
   const newsItem = DUMMY_NEWS.find(
     (newsItem) => newsItem.slug === newsItemSlug
@@ -23,7 +29,7 @@ export default function InterceptedImagePage({ params }) {
 
   return (
     <>
-      <div className="modal-backdrop" />
+      <div className="modal-backdrop" onClick={router.back} />
       <dialog className="modal" open>
         <div className="fullscreen-image">
           <img src={`/images/news/${newsItem.image}`} alt={newsItem.title} />
