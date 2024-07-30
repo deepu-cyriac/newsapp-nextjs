@@ -1,49 +1,21 @@
-"use client";
-
 import NewsList from "@/components/news-list";
-import { useEffect, useState } from "react";
 
-export default function NewsPage() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState();
-  const [news, setNews] = useState();
+//this is converted to a server component from a client component. check git or file history to view client side data fetching
+//this is the standard way to fetch data in next.js i.e, to fetch data using server component
+//it also provides seo features as the prepared data is returned from the server with the page
+export default async function NewsPage() {
+  const response = await fetch("http://localhost:8080/news");
 
-  useEffect(() => {
-    //better not give async to useeffect, instead give it to a function inside it, like this.
-    async function fetchNews() {
-      setIsLoading(true);
-      const response = await fetch("http://localhost:8080/news");
-
-      if (!response.ok) {
-        setError("Failed to fetch news.");
-        setIsLoading(false);
-      }
-
-      const news = await response.json();
-      setIsLoading(false);
-      setNews(news);
-    }
-
-    fetchNews();
-  }, []);
-
-  if (isLoading) {
-    return <p>Loading...</p>;
+  if (!response.ok) {
+    throw new Error("Failed to fetch news.");
   }
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  const news = await response.json();
 
-  let newsContent;
-
-  if (news) {
-    newsContent = <NewsList news={news} />;
-  }
   return (
     <>
       <h2>This is the news page!</h2>
-      {newsContent}
+      <NewsList news={news} />;
     </>
   );
 }
