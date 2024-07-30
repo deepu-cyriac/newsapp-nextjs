@@ -6,21 +6,14 @@
 //so different content will be shown either the intercepted one or the current one depending on how you got to the page
 //first time will load intercepted. subsequent reloads will load current one - i think
 
-"use client";
-//as router only works on client side
+import { notFound } from "next/navigation";
 
-import { notFound, useRouter } from "next/navigation";
+import ModalBackdrop from "@/components/modal-backdrop";
+import { getNewsItem } from "@/lib/news";
 
-import { DUMMY_NEWS } from "@/dummy-news";
-
-export default function InterceptedImagePage({ params }) {
-  //a next js router for navigating programmatically around the page
-  const router = useRouter();
-
+export default async function InterceptedImagePage({ params }) {
   const newsItemSlug = params.slug;
-  const newsItem = DUMMY_NEWS.find(
-    (newsItem) => newsItem.slug === newsItemSlug
-  );
+  const newsItem = await getNewsItem(newsItemSlug);
 
   if (!newsItem) {
     //will show the closest not found page
@@ -29,7 +22,7 @@ export default function InterceptedImagePage({ params }) {
 
   return (
     <>
-      <div className="modal-backdrop" onClick={router.back} />
+      <ModalBackdrop />
       <dialog className="modal" open>
         <div className="fullscreen-image">
           <img src={`/images/news/${newsItem.image}`} alt={newsItem.title} />
